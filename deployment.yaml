@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inudev-account
+  labels:
+    app: inudev-account
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inudev-account
+  template:
+    metadata:
+      labels:
+        app: inudev-account
+    spec:
+      containers:
+        - image: inudev-account:v1
+          name: inudev-account
+          envFrom:
+            - secretRef:
+                name: inudev-account
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 500Mi
+            requests:
+              cpu: 300m
+              memory: 300Mi
+          volumeMounts:
+            - name: secret
+              mountPath: "/tmp/"
+              readOnly: true
+      volumes:
+        - name: secret
+          secret:
+            secretName: inudev-account-key
+            items:
+              - key: key.json
+                path: key.json
