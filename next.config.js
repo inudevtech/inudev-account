@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-}
+// eslint-disable-next-line import/no-extraneous-dependencies
+require('dotenv').config();
 
-module.exports = nextConfig
+const nextConfig = {
+  reactStrictMode: false,
+  swcMinify: true,
+};
+
+module.exports = nextConfig;
