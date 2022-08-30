@@ -102,7 +102,7 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |-
         kubectl create secret generic $DEPLOYMENT_NAME --from-env-file=./$DEPLOYMENT_NAME.env
-        ./kustomize edit set image hotdog:v1=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        ./kustomize edit set image inudev-account:v1=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deploy $DEPLOYMENT_NAME
         kubectl get services -o wide
