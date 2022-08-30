@@ -139,7 +139,7 @@ const index = () => {
   return (
     <div className="min-h-screen bg-slate-100 p-3">
       {AccountState != null ? (
-        <div className="container mx-auto bg-white shadow-lg rounded-lg">
+        <div className="container mx-auto bg-white shadow-lg rounded-lg max-w-[1024px]">
           <form className="flex flex-col items-start gap-3 p-3" onSubmit={save}>
             <h2 className="text-2xl">アイコン</h2>
             <div className="flex gap-2 flex-col md:flex-row items-start">
@@ -219,7 +219,7 @@ const index = () => {
             </button>
             <button
               type="button"
-              className="transition mt-2 p-1 border border-blue-400 rounded-md hover:shadow-xl hover:border-blue-500 block text-center bg-blue-300"
+              className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
               onClick={() => logout(true)}
             >
               ログアウト
