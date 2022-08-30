@@ -2,7 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { Component, FormEvent } from 'react';
 import Image from 'next/image';
-import { router } from 'next/client';
+import { NextRouter, withRouter } from 'next/router';
+import Link from 'next/link';
 import { signUp } from '../util/firebase/auth';
 
 interface LoginStateProps {
@@ -11,8 +12,12 @@ interface LoginStateProps {
   loading: boolean
 }
 
-class loginModal extends Component<{ }, LoginStateProps> {
-  constructor(props: {}) {
+interface WithRouterProps {
+  router: NextRouter
+}
+
+class loginModal extends Component<WithRouterProps, LoginStateProps> {
+  constructor(props: WithRouterProps) {
     super(props);
     this.state = {
       errMsg: '',
@@ -35,6 +40,7 @@ class loginModal extends Component<{ }, LoginStateProps> {
 
   render() {
     const moveLoginPage = () => {
+      const { router } = this.props;
       router.replace({ pathname: '/login' }).then(() => {});
     };
 
@@ -64,7 +70,7 @@ class loginModal extends Component<{ }, LoginStateProps> {
               required
             />
 
-            {state === null ? (
+            {state === null || state ? (
               <button
                 type="submit"
                 disabled={loading}
@@ -74,7 +80,7 @@ class loginModal extends Component<{ }, LoginStateProps> {
                 アカウントを作成
               </button>
             ) : null}
-            <p className={`whitespace-pre-wrap${state ? 'text-red-500' : ''}`}>
+            <p className={`whitespace-pre-wrap ${state ? 'text-red-500' : ''}`}>
               {errMsg}
             </p>
             {state === false ? (
@@ -85,7 +91,11 @@ class loginModal extends Component<{ }, LoginStateProps> {
               >
                 ログイン画面に移る
               </button>
-            ) : null}
+            ) : (
+              <div className="text-center underline underline-offset-2">
+                <Link href="/login">ログイン</Link>
+              </div>
+            )}
           </form>
         </div>
       </div>
@@ -93,4 +103,4 @@ class loginModal extends Component<{ }, LoginStateProps> {
   }
 }
 
-export default loginModal;
+export default withRouter(loginModal);

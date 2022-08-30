@@ -129,23 +129,23 @@ const index = () => {
   };
 
   const updateEmail = () => {
-    router.replace({ pathname: '/login', query: { update: 'email' } }).then(() => {});
+    router.push({ pathname: '/login', query: { update: 'email' } }).then(() => {});
   };
 
   const removeAccount = () => {
-    router.replace({ pathname: '/login', query: { update: 'account' } }).then(() => {});
+    router.push({ pathname: '/login', query: { update: 'account' } }).then(() => {});
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-slate-100 p-3">
       {AccountState != null ? (
-        <div className="container mx-auto">
-          <form className="flex flex-col items-start gap-3 p-2" onSubmit={save}>
+        <div className="container mx-auto bg-white shadow-lg rounded-lg">
+          <form className="flex flex-col items-start gap-3 p-3" onSubmit={save}>
             <h2 className="text-2xl">アイコン</h2>
             <div className="flex gap-2 flex-col md:flex-row items-start">
               {iconURL === null ? <p className="text-lg">アイコンは指定されていません</p> : (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={iconURL} alt="アイコン" className="h-[256px] max-w-fit rounded-full" />
+                <img src={iconURL} alt="アイコン" className="w-full max-w-[256px] max-w-fit rounded-full" />
               )}
               <div className="flex flex-col gap-2">
                 <label
@@ -176,7 +176,7 @@ const index = () => {
                   placeholder="ユーザー名"
                   defaultValue={userName!}
                   onChange={editUserName}
-                  className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+                  className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2 max-w-[200px]"
                   required
                 />
               </div>
@@ -184,7 +184,6 @@ const index = () => {
                 type="button"
                 onClick={updateEmail}
                 className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
-                disabled={iconURL === null}
               >
                 メールアドレスの再設定をする
               </button>
@@ -192,7 +191,6 @@ const index = () => {
                 type="button"
                 onClick={updatePassword}
                 className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
-                disabled={iconURL === null}
               >
                 パスワードの再設定をする
               </button>
@@ -200,7 +198,6 @@ const index = () => {
                 type="button"
                 onClick={removeAccount}
                 className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
-                disabled={iconURL === null}
               >
                 アカウントを削除する
               </button>

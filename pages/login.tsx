@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { updateEmail } from '@firebase/auth';
 import { sendEmailVerification } from 'firebase/auth';
+import Link from 'next/link';
 import { login } from '../util/firebase/auth';
 
 const loginComponent = () => {
@@ -92,6 +93,11 @@ const loginComponent = () => {
             className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
             value={submitText}
           />
+          {!(isRemoveAccount || isUpdateEmail) && (
+            <div className="text-center underline underline-offset-2">
+              <Link href="/signup">アカウントを作成</Link>
+            </div>
+          )}
           <p className="text-red-500 whitespace-pre-wrap">
             {errMsg}
           </p>
