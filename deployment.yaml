@@ -35,14 +35,3 @@ spec:
             requests:
               cpu: 300m
               memory: 300Mi
-          volumeMounts:
-            - name: secret
-              mountPath: "/tmp/"
-              readOnly: true
-      volumes:
-        - name: secret
-          secret:
-            secretName: inudev-account-key
-            items:
-              - key: key.json
-                path: key.json
