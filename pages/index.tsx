@@ -180,20 +180,26 @@ const index = () => {
                   required
                 />
               </div>
-              <button
-                type="button"
-                onClick={updateEmail}
-                className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
-              >
-                メールアドレスの再設定をする
-              </button>
-              <button
-                type="button"
-                onClick={updatePassword}
-                className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
-              >
-                パスワードの再設定をする
-              </button>
+              {
+                AccountState?.providerData[0].providerId === 'password' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={updateEmail}
+                      className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
+                    >
+                      メールアドレスの再設定をする
+                    </button>
+                    <button
+                      type="button"
+                      onClick={updatePassword}
+                      className="transition p-1 border border-red-500 rounded-md hover:shadow-lg hover:border-red-600 text-center"
+                    >
+                      パスワードの再設定をする
+                    </button>
+                  </>
+                )
+              }
               <button
                 type="button"
                 onClick={removeAccount}

@@ -30,7 +30,7 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
     e.preventDefault();
     const elements = e.currentTarget as unknown as HTMLInputElement[];
     this.setState({ loading: true });
-    signUp(elements[0].value, elements[1].value, elements[2].value)
+    signUp(0, elements[0].value, elements[1].value, elements[2].value)
       .then(async () => {
         this.setState({ state: false, errMsg: '仮登録処理が完了しました。\nメールを確認して本登録処理を完了してください。\n本登録が完了するまでログインすることはできません。' });
       })
@@ -41,7 +41,7 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
   render() {
     const moveLoginPage = () => {
       const { router } = this.props;
-      router.replace({ pathname: '/login' }).then(() => {});
+      router.push({ pathname: '/login' }).then(() => {});
     };
 
     const { errMsg, loading, state } = this.state;
@@ -71,14 +71,28 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
             />
 
             {state === null || state ? (
-              <button
-                type="submit"
-                disabled={loading}
-                className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
-              >
-                {loading ? (<FontAwesomeIcon icon={faSpinner} className="animate-spin px-2" />) : null}
-                アカウントを作成
-              </button>
+              <>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
+                >
+                  {loading ? (<FontAwesomeIcon icon={faSpinner} className="animate-spin px-2" />) : null}
+                  アカウントを作成
+                </button>
+                <Image
+                  src="/btn_google_signin.png"
+                  alt="Login With Google"
+                  onClick={async () => {
+                    await signUp(1);
+                    moveLoginPage();
+                  }}
+                  className="mx-auto cursor-pointer"
+                  width="300"
+                  height="50"
+                  objectFit="contain"
+                />
+              </>
             ) : null}
             <p className={`whitespace-pre-wrap ${state ? 'text-red-500' : ''}`}>
               {errMsg}

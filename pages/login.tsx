@@ -1,37 +1,56 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { updateEmail } from '@firebase/auth';
-import { sendEmailVerification } from 'firebase/auth';
+import { sendEmailVerification, UserCredential } from 'firebase/auth';
 import Link from 'next/link';
 import { login } from '../util/firebase/auth';
+import { AccountContext } from './_app';
+
+interface LoginProcessProps {
+  r: UserCredential;
+  elements: HTMLInputElement[];
+}
 
 const loginComponent = () => {
   const router = useRouter();
   const [errMsg, setErrMsg] = useState<String>();
   const isUpdateEmail = router.query.update === 'email';
   const isRemoveAccount = router.query.update === 'account';
+  const { AccountState } = useContext(AccountContext);
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    const loginProcess = async ({ r, elements }: LoginProcessProps) => {
+      if (!r.user.emailVerified) {
+        setErrMsg('メール認証ができていません。\n届いているメールをご確認ください。');
+      } else if (isUpdateEmail) {
+        await updateEmail(r.user, elements[0].value);
+        await sendEmailVerification(r.user);
+        setErrMsg('メールアドレスを変更しました。\nメールを確認して認証をしてください。');
+      } else if (isRemoveAccount) {
+        await r.user.delete();
+        setErrMsg('アカウントを削除しました。\n犬開発のサービスをご利用いただきありがとうございました。');
+      } else {
+        router.replace('/').then(() => {
+        });
+      }
+    };
+
     e.preventDefault();
     const elements = e.currentTarget as unknown as HTMLInputElement[];
-    login(elements[Number(isUpdateEmail)].value, elements[1 + Number(isUpdateEmail)].value)
-      .then(async (r) => {
-        if (!r.user.emailVerified) {
-          setErrMsg('メール認証ができていません。\n届いているメールをご確認ください。');
-        } else if (isUpdateEmail) {
-          await updateEmail(r.user, elements[0].value);
-          await sendEmailVerification(r.user);
-          setErrMsg('メールアドレスを変更しました。\nメールを確認して認証をしてください。');
-        } else if (isRemoveAccount) {
-          await r.user.delete();
-          setErrMsg('アカウントを削除しました。\n犬開発のサービスをご利用いただきありがとうございました。');
-        } else {
-          router.replace('/').then(() => {
-          });
-        }
-      })
-      .catch(() => setErrMsg('ログインできませんでした。\n入力情報を確認してください。'));
+    if ((!isUpdateEmail && !isRemoveAccount) || AccountState?.providerData[0].providerId === 'password') {
+      login(0, elements[Number(isUpdateEmail)].value, elements[1 + Number(isUpdateEmail)].value)
+        .then(async (r) => {
+          await loginProcess({ r, elements });
+        })
+        .catch(() => setErrMsg('ログインできませんでした。\n入力情報を確認してください。'));
+    } else if (AccountState?.providerData[0].providerId === 'google.com') {
+      login(1)
+        .then(async (r) => {
+          await loginProcess({ r, elements });
+        })
+        .catch(() => setErrMsg('ログインできませんでした。\n入力情報を確認してください。'));
+    }
   };
 
   let submitText;
@@ -61,25 +80,44 @@ const loginComponent = () => {
             {titleText}
           </h3>
           {isUpdateEmail && (
-          <input
-            type="email"
-            placeholder="新しいメールアドレス"
-            className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
-            required
-          />
+            <input
+              type="email"
+              placeholder="新しいメールアドレス"
+              className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+              required
+            />
           )}
-          <input
-            type="email"
-            placeholder={`${isUpdateEmail ? '現在の' : ''}メールアドレス`}
-            className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
-            required
-          />
-          <input
-            type="password"
-            placeholder="パスワード"
-            className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
-            required
-          />
+          {((!isRemoveAccount && !isUpdateEmail) || AccountState?.providerData[0].providerId === 'password') && (
+            <>
+              <input
+                type="email"
+                placeholder={`${isUpdateEmail ? '現在の' : ''}メールアドレス`}
+                className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+                required
+              />
+              <input
+                type="password"
+                placeholder="パスワード"
+                className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+                required
+              />
+              {!isRemoveAccount && !isUpdateEmail && (
+                <Image
+                  src="/btn_google_signin.png"
+                  alt="Login With Google"
+                  onClick={async () => {
+                    await login(1);
+                    router.replace('/').then(() => {
+                    });
+                  }}
+                  className="mx-auto cursor-pointer"
+                  width="300"
+                  height="50"
+                  objectFit="contain"
+                />
+              )}
+            </>
+          )}
           {isRemoveAccount && (
             <label
               htmlFor="confirm"
