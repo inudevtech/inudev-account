@@ -109,7 +109,8 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
                   alt="Login With Google"
                   onClick={async () => {
                     await signUp(1);
-                    moveLoginPage();
+                    const { router } = this.props;
+                    router.push({ pathname: "/" }).then(() => {});
                   }}
                   className="mx-auto cursor-pointer"
                   width="300"
