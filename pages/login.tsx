@@ -123,20 +123,6 @@ const loginComponent = () => {
                 className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
                 required
               />
-              {!isRemoveAccount && !isUpdateEmail && (
-                <Image
-                  src="/btn_google_signin.png"
-                  alt="Login With Google"
-                  onClick={async () => {
-                    await login(1);
-                    router.replace("/").then(() => {});
-                  }}
-                  className="mx-auto cursor-pointer"
-                  width="300"
-                  height="50"
-                  objectFit="contain"
-                />
-              )}
             </>
           )}
           {isRemoveAccount && (
@@ -150,6 +136,20 @@ const loginComponent = () => {
             className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
             value={submitText}
           />
+          {!isRemoveAccount && !isUpdateEmail && (
+            <Image
+              src="/btn_google_signin.png"
+              alt="Login With Google"
+              onClick={async () => {
+                await login(1);
+                router.replace("/").then(() => {});
+              }}
+              className="mx-auto cursor-pointer"
+              width="300"
+              height="50"
+              objectFit="contain"
+            />
+          )}
           {!(isRemoveAccount || isUpdateEmail) && (
             <div className="text-center underline underline-offset-2">
               <Link href="/signup">アカウントを作成</Link>
