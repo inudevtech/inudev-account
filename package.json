@@ -11,18 +11,18 @@
     "format": "prettier --write --ignore-path .prettierignore ."
   },
   "dependencies": {
-    "@firebase/auth": "0.20.5",
-    "@fortawesome/fontawesome-svg-core": "6.1.2",
-    "@fortawesome/free-solid-svg-icons": "6.1.2",
+    "@firebase/auth": "0.20.6",
+    "@fortawesome/fontawesome-svg-core": "6.2.0",
+    "@fortawesome/free-solid-svg-icons": "6.2.0",
     "@fortawesome/react-fontawesome": "0.2.0",
     "axios": "0.27.2",
-    "firebase": "9.9.2",
-    "next": "12.2.4",
+    "firebase": "9.9.4",
+    "next": "12.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-google-recaptcha-v3": "1.10.0",
-    "sass": "1.54.4",
-    "sharp": "0.30.7"
+    "sass": "1.54.9",
+    "sharp": "0.31.0"
   },
   "devDependencies": {
     "@types/node": "18.7.1",
