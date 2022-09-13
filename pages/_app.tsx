@@ -1,14 +1,12 @@
-import '../styles/globals.scss';
-import type { AppProps } from 'next/app';
-import { config } from '@fortawesome/fontawesome-svg-core';
-import '@fortawesome/fontawesome-svg-core/styles.css';
-import {
-  createContext, useEffect, useMemo, useState,
-} from 'react';
-import { User } from '@firebase/auth';
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
-import { onAuthStateChanged } from '../util/firebase/auth';
-import { AccountType } from '../util/global';
+import "../styles/globals.scss";
+import type { AppProps } from "next/app";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { createContext, useEffect, useMemo, useState } from "react";
+import { User } from "@firebase/auth";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import { onAuthStateChanged } from "../util/firebase/auth";
+import { AccountType } from "../util/global";
 
 config.autoAddCss = false;
 
@@ -20,7 +18,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     onAuthStateChanged((user) => setAccountState(user));
   }, []);
-  const value = useMemo(() => ({ AccountState, setAccountState }), [AccountState, setAccountState]);
+  const value = useMemo(
+    () => ({ AccountState, setAccountState }),
+    [AccountState, setAccountState]
+  );
 
   return (
     <GoogleReCaptchaProvider

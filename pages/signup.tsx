@@ -1,26 +1,26 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { Component, FormEvent } from 'react';
-import Image from 'next/image';
-import { NextRouter, withRouter } from 'next/router';
-import Link from 'next/link';
-import { signUp } from '../util/firebase/auth';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Component, FormEvent } from "react";
+import Image from "next/image";
+import { NextRouter, withRouter } from "next/router";
+import Link from "next/link";
+import { signUp } from "../util/firebase/auth";
 
 interface LoginStateProps {
-  errMsg: string,
-  state: boolean|null,
-  loading: boolean
+  errMsg: string;
+  state: boolean | null;
+  loading: boolean;
 }
 
 interface WithRouterProps {
-  router: NextRouter
+  router: NextRouter;
 }
 
 class loginModal extends Component<WithRouterProps, LoginStateProps> {
   constructor(props: WithRouterProps) {
     super(props);
     this.state = {
-      errMsg: '',
+      errMsg: "",
       state: null,
       loading: false,
     };
@@ -32,24 +32,43 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
     this.setState({ loading: true });
     signUp(0, elements[0].value, elements[1].value, elements[2].value)
       .then(async () => {
-        this.setState({ state: false, errMsg: '仮登録処理が完了しました。\nメールを確認して本登録処理を完了してください。\n本登録が完了するまでログインすることはできません。' });
+        this.setState({
+          state: false,
+          errMsg:
+            "仮登録処理が完了しました。\nメールを確認して本登録処理を完了してください。\n本登録が完了するまでログインすることはできません。",
+        });
       })
-      .catch(() => this.setState({ state: true, errMsg: '登録ができませんでした。\n入力情報を確認してください。' }))
+      .catch(() =>
+        this.setState({
+          state: true,
+          errMsg: "登録ができませんでした。\n入力情報を確認してください。",
+        })
+      )
       .finally(() => this.setState({ loading: false }));
   }
 
   render() {
     const moveLoginPage = () => {
       const { router } = this.props;
-      router.push({ pathname: '/login' }).then(() => {});
+      router.push({ pathname: "/login" }).then(() => {});
     };
 
     const { errMsg, loading, state } = this.state;
     return (
       <div className="flex items-center justify-center h-screen w-screen">
         <div className="shadow-xl rounded">
-          <form className="m-5 mt-0 flex flex-col gap-2" onSubmit={this.submit.bind(this)}>
-            <Image src="/logo.png" alt="ロゴ" className="mx-auto" width="300" height="200" objectFit="contain" />
+          <form
+            className="m-5 mt-0 flex flex-col gap-2"
+            onSubmit={this.submit.bind(this)}
+          >
+            <Image
+              src="/logo.png"
+              alt="ロゴ"
+              className="mx-auto"
+              width="300"
+              height="200"
+              objectFit="contain"
+            />
             <h3 className="text-center text-xl">犬開発アカウントを作成</h3>
             <input
               type="email"
@@ -77,7 +96,12 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
                   disabled={loading}
                   className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
                 >
-                  {loading ? (<FontAwesomeIcon icon={faSpinner} className="animate-spin px-2" />) : null}
+                  {loading ? (
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin px-2"
+                    />
+                  ) : null}
                   アカウントを作成
                 </button>
                 <Image
@@ -94,7 +118,7 @@ class loginModal extends Component<WithRouterProps, LoginStateProps> {
                 />
               </>
             ) : null}
-            <p className={`whitespace-pre-wrap ${state ? 'text-red-500' : ''}`}>
+            <p className={`whitespace-pre-wrap ${state ? "text-red-500" : ""}`}>
               {errMsg}
             </p>
             {state === false ? (
