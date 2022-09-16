@@ -15,6 +15,7 @@ import { Dispatch, SetStateAction } from "react";
 import {
   getAdditionalUserInfo,
   GithubAuthProvider,
+  sendPasswordResetEmail,
   TwitterAuthProvider,
   User,
 } from "@firebase/auth";
@@ -23,6 +24,10 @@ import auth from "./firebase";
 const googleProvider = new GoogleAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
 const githubProvider = new GithubAuthProvider();
+
+export const resetPassword = async () => {
+  await sendPasswordResetEmail(auth, <string>auth.currentUser?.email);
+};
 
 export function login(
   type: number,
