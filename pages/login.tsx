@@ -6,6 +6,7 @@ import { sendEmailVerification, UserCredential } from "firebase/auth";
 import Link from "next/link";
 import { login } from "../util/firebase/auth";
 import { AccountContext } from "./_app";
+import SSOLogin from "../component/SSOLogin";
 
 interface LoginProcessProps {
   r: UserCredential;
@@ -14,14 +15,14 @@ interface LoginProcessProps {
 
 const loginComponent = () => {
   const router = useRouter();
-  const [errMsg, setErrMsg] = useState<String>();
+  const [errMsg, setErrMsg] = useState<string>("");
   const isUpdateEmail = router.query.update === "email";
   const isRemoveAccount = router.query.update === "account";
   const { AccountState } = useContext(AccountContext);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     const loginProcess = async ({ r, elements }: LoginProcessProps) => {
-      if (!r.user.emailVerified) {
+      if (!r.user.emailVerified && AccountState?.providerData[0].providerId === "password") {
         setErrMsg(
           "メール認証ができていません。\n届いているメールをご確認ください。"
         );
@@ -60,6 +61,22 @@ const loginComponent = () => {
         );
     } else if (AccountState?.providerData[0].providerId === "google.com") {
       login(1)
+        .then(async (r) => {
+          await loginProcess({ r, elements });
+        })
+        .catch(() =>
+          setErrMsg("ログインできませんでした。\n入力情報を確認してください。")
+        );
+    } else if (AccountState?.providerData[0].providerId === "twitter.com") {
+      login(2)
+        .then(async (r) => {
+          await loginProcess({ r, elements });
+        })
+        .catch(() =>
+          setErrMsg("ログインできませんでした。\n入力情報を確認してください。")
+        );
+    } else if (AccountState?.providerData[0].providerId === "github.com") {
+      login(3)
         .then(async (r) => {
           await loginProcess({ r, elements });
         })
@@ -137,18 +154,7 @@ const loginComponent = () => {
             value={submitText}
           />
           {!isRemoveAccount && !isUpdateEmail && (
-            <Image
-              src="/btn_google_signin.png"
-              alt="Login With Google"
-              onClick={async () => {
-                await login(1);
-                router.replace("/").then(() => {});
-              }}
-              className="mx-auto cursor-pointer"
-              width="300"
-              height="50"
-              objectFit="contain"
-            />
+            <SSOLogin setErrMsg={setErrMsg} />
           )}
           {!(isRemoveAccount || isUpdateEmail) && (
             <div className="text-center underline underline-offset-2">

@@ -1,145 +1,107 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Component, FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import Image from "next/image";
-import { NextRouter, withRouter } from "next/router";
+import { useRouter, withRouter } from "next/router";
 import Link from "next/link";
 import { signUp } from "../util/firebase/auth";
+import SSOLogin from "../component/SSOLogin";
 
-interface LoginStateProps {
-  errMsg: string;
-  state: boolean | null;
-  loading: boolean;
-}
+const signupModal = () => {
+  const [errMsg, setErrMsg] = useState<string>("");
+  const [state, setState] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
-interface WithRouterProps {
-  router: NextRouter;
-}
-
-class loginModal extends Component<WithRouterProps, LoginStateProps> {
-  constructor(props: WithRouterProps) {
-    super(props);
-    this.state = {
-      errMsg: "",
-      state: null,
-      loading: false,
-    };
-  }
-
-  submit(e: FormEvent<HTMLFormElement>) {
+  const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const elements = e.currentTarget as unknown as HTMLInputElement[];
-    this.setState({ loading: true });
+    setLoading(true);
     signUp(0, elements[0].value, elements[1].value, elements[2].value)
       .then(async () => {
-        this.setState({
-          state: false,
-          errMsg:
-            "仮登録処理が完了しました。\nメールを確認して本登録処理を完了してください。\n本登録が完了するまでログインすることはできません。",
-        });
+        setState(false);
+        setErrMsg("仮登録処理が完了しました。\nメールを確認して本登録処理を完了してください。\n本登録が完了するまでログインすることはできません。");
       })
-      .catch(() =>
-        this.setState({
-          state: true,
-          errMsg: "登録ができませんでした。\n入力情報を確認してください。",
-        })
-      )
-      .finally(() => this.setState({ loading: false }));
+      .catch(() =>{
+        setState(true);
+        setErrMsg("登録ができませんでした。\n入力情報を確認してください。");
+  })
+      .finally(() => setLoading(false));
   }
 
-  render() {
-    const moveLoginPage = () => {
-      const { router } = this.props;
-      router.push({ pathname: "/login" }).then(() => {});
-    };
+  return (
+    <div className="flex items-center justify-center h-screen w-screen">
+      <div className="shadow-xl rounded">
+        <form
+          className="m-5 mt-0 flex flex-col gap-2"
+          onSubmit={submit}
+        >
+          <Image
+            src="/logo.png"
+            alt="ロゴ"
+            className="mx-auto"
+            width="300"
+            height="200"
+            objectFit="contain"
+          />
+          <h3 className="text-center text-xl">犬開発アカウントを作成</h3>
+          <input
+            type="email"
+            placeholder="メールアドレス"
+            className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+            required
+          />
+          <input
+            type="password"
+            placeholder="パスワード"
+            className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+            required
+          />
+          <input
+            type="text"
+            placeholder="ニックネーム"
+            className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
+            required
+          />
 
-    const { errMsg, loading, state } = this.state;
-    return (
-      <div className="flex items-center justify-center h-screen w-screen">
-        <div className="shadow-xl rounded">
-          <form
-            className="m-5 mt-0 flex flex-col gap-2"
-            onSubmit={this.submit.bind(this)}
-          >
-            <Image
-              src="/logo.png"
-              alt="ロゴ"
-              className="mx-auto"
-              width="300"
-              height="200"
-              objectFit="contain"
-            />
-            <h3 className="text-center text-xl">犬開発アカウントを作成</h3>
-            <input
-              type="email"
-              placeholder="メールアドレス"
-              className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
-              required
-            />
-            <input
-              type="password"
-              placeholder="パスワード"
-              className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
-              required
-            />
-            <input
-              type="text"
-              placeholder="ニックネーム"
-              className="border border-slate-300 p-1 rounded transition focus:border-slate-500 focus:border-2"
-              required
-            />
-
-            {state === null || state ? (
-              <>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
-                >
-                  {loading ? (
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      className="animate-spin px-2"
-                    />
-                  ) : null}
-                  アカウントを作成
-                </button>
-                <Image
-                  src="/btn_google_signin.png"
-                  alt="Login With Google"
-                  onClick={async () => {
-                    await signUp(1);
-                    const { router } = this.props;
-                    router.push({ pathname: "/" }).then(() => {});
-                  }}
-                  className="mx-auto cursor-pointer"
-                  width="300"
-                  height="50"
-                  objectFit="contain"
-                />
-              </>
-            ) : null}
-            <p className={`whitespace-pre-wrap ${state ? "text-red-500" : ""}`}>
-              {errMsg}
-            </p>
-            {state === false ? (
+          {state === null || state ? (
+            <>
               <button
-                type="button"
-                className="transition p-1 border border-slate-300 rounded-md hover:shadow-lg hover:border-slate-500 block text-center"
-                onClick={moveLoginPage}
+                type="submit"
+                disabled={loading}
+                className="transition p-2 border border-sky-100 rounded-md hover:shadow-lg hover:border-sky-600 block text-center bg-sky-400"
               >
-                ログイン画面に移る
+                {loading ? (
+                  <FontAwesomeIcon
+                    icon={faSpinner}
+                    className="animate-spin px-2"
+                  />
+                ) : null}
+                アカウントを作成
               </button>
-            ) : (
-              <div className="text-center underline underline-offset-2">
-                <Link href="/login">ログイン</Link>
-              </div>
-            )}
-          </form>
-        </div>
+              <SSOLogin setErrMsg={setErrMsg} />
+            </>
+          ) : null}
+          <p className={`whitespace-pre-wrap ${state ? "text-red-500" : ""}`}>
+            {errMsg}
+          </p>
+          {state === false ? (
+            <button
+              type="button"
+              className="transition p-1 border border-slate-300 rounded-md hover:shadow-lg hover:border-slate-500 block text-center"
+              onClick={() => router.push({ pathname: "/login" }).then(() => {})}
+            >
+              ログイン画面に移る
+            </button>
+          ) : (
+            <div className="text-center underline underline-offset-2">
+              <Link href="/login">ログイン</Link>
+            </div>
+          )}
+        </form>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-export default withRouter(loginModal);
+export default withRouter(signupModal);

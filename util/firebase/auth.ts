@@ -4,7 +4,6 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged as onFirebaseAuthStateChanged,
   sendEmailVerification,
-  sendPasswordResetEmail,
   setPersistence,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -13,10 +12,17 @@ import {
   UserCredential,
 } from "firebase/auth";
 import { Dispatch, SetStateAction } from "react";
-import { User } from "@firebase/auth";
+import {
+  getAdditionalUserInfo,
+  GithubAuthProvider,
+  TwitterAuthProvider,
+  User,
+} from "@firebase/auth";
 import auth from "./firebase";
 
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
+const twitterProvider = new TwitterAuthProvider();
+const githubProvider = new GithubAuthProvider();
 
 export function login(
   type: number,
@@ -24,16 +30,48 @@ export function login(
   password?: string
 ): Promise<UserCredential> {
   return new Promise((resolve, reject) => {
-    if (type === 0) {
-      setPersistence(auth, browserSessionPersistence)
-        .then(() =>
-          resolve(signInWithEmailAndPassword(auth, email!, password!))
-        )
-        .catch((e) => reject(e));
-    } else if (type === 1) {
-      setPersistence(auth, browserSessionPersistence)
-        .then(() => resolve(signInWithPopup(auth, provider)))
-        .catch((e) => reject(e));
+    const persistence = setPersistence(auth, browserSessionPersistence);
+    switch (type) {
+      // メアド認証
+      case 0:
+        persistence
+          .then(() =>
+            resolve(signInWithEmailAndPassword(auth, email!, password!))
+          )
+          .catch((e) => reject(e));
+        break;
+      // Google認証
+      case 1:
+        persistence
+          .then(() => resolve(signInWithPopup(auth, googleProvider)))
+          .catch((e) => reject(e));
+        break;
+      // Twitter認証
+      case 2:
+        persistence
+          .then(async () => {
+            const user = await signInWithPopup(auth, twitterProvider);
+            await updateProfile(user.user, {
+              displayName: getAdditionalUserInfo(user)?.username!,
+            });
+            resolve(user);
+          })
+          .catch((e) => reject(e));
+        break;
+      // Github認証
+      case 3:
+        persistence
+          .then(async () => {
+            const user = await signInWithPopup(auth, githubProvider);
+            await updateProfile(user.user, {
+              displayName: getAdditionalUserInfo(user)?.username!,
+            });
+            resolve(user);
+          })
+          .catch((e) => reject(e));
+        break;
+      default:
+        reject(new Error("認証方法が不正です"));
     }
   });
 }
@@ -67,20 +105,19 @@ export async function signUp(
       displayName,
     });
     await sendEmailVerification(user);
-  } else if (type === 1) {
+  } else if (type > 0) {
     await login(type);
   }
 }
-
-export const resetPassword = async () => {
-  await sendPasswordResetEmail(auth, <string>auth.currentUser?.email);
-};
 
 export const onAuthStateChanged = (
   callback: Dispatch<SetStateAction<User | null>>
 ) => {
   onFirebaseAuthStateChanged(auth, async (user) => {
-    if (user?.emailVerified) {
+    if (
+      user?.emailVerified ||
+      user?.providerData[0].providerId !== "password"
+    ) {
       callback(user);
     } else {
       await logout();
