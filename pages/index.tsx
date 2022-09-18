@@ -86,19 +86,28 @@ const index = () => {
               token: await AccountState?.getIdToken(true),
               icon: true,
               recaptcha,
+              contentLength: byteString.byteLength,
             };
 
             axios
-              .post(
-                `${process.env.NEXT_PUBLIC_HOTDOG_URL}/api/upload`,
-                byteString,
-                { params }
-              )
+              .post(`${process.env.NEXT_PUBLIC_HOTDOG_URL}/api/upload`, null, {
+                params,
+              })
               .then((res) => {
-                updateProfile(AccountState!, {
-                  photoURL: res.data.id,
-                });
-                removeEditedData(AccountKind.Icon);
+                axios
+                  .put(res.data.url, byteString, {
+                    headers: {
+                      "Content-Type": "image/png",
+                      "x-goog-acl": "public-read",
+                      "x-goog-content-length-range": `${byteString.byteLength},${byteString.byteLength}`,
+                    },
+                  })
+                  .then(() => {
+                    updateProfile(AccountState!, {
+                      photoURL: res.data.id,
+                    });
+                    removeEditedData(AccountKind.Icon);
+                  });
               });
           } else {
             await updateProfile(AccountState!, {
