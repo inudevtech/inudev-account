@@ -81,7 +81,6 @@ const index = () => {
             const byteString = Buffer.from(iconURL?.split(",")[1]!, "base64");
 
             const params = {
-              type: "image/png",
               filename: "icon.png",
               token: await AccountState?.getIdToken(true),
               icon: true,
@@ -97,7 +96,7 @@ const index = () => {
                 axios
                   .put(res.data.url, byteString, {
                     headers: {
-                      "Content-Type": "image/png",
+                      "Content-Type": "application/octet-stream",
                       "x-goog-acl": "public-read",
                       "x-goog-content-length-range": `${byteString.byteLength},${byteString.byteLength}`,
                     },
