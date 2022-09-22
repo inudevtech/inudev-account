@@ -18,3 +18,7 @@
   @apply hover:shadow-xl;
   @apply transition-all;
 }
+
+.animate__animated.animate__slideInUp {
+  --animate-duration: 400ms;
+}

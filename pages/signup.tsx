@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, withRouter } from "next/router";
 import Link from "next/link";
 import { signUp } from "../util/firebase/auth";
-import SSOLogin from "../component/SSOLogin";
+import SSOLogin from "../components/SSOLogin";
 
 const signupModal = () => {
   const [errMsg, setErrMsg] = useState<string>("");

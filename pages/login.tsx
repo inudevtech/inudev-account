@@ -4,9 +4,12 @@ import Image from "next/image";
 import { updateEmail } from "@firebase/auth";
 import { sendEmailVerification, UserCredential } from "firebase/auth";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { login } from "../util/firebase/auth";
 import { AccountContext } from "./_app";
-import SSOLogin from "../component/SSOLogin";
+import SSOLogin from "../components/SSOLogin";
+import ResetPasswordModal from "../components/ResetPasswordModal";
 
 interface LoginProcessProps {
   r: UserCredential;
@@ -19,10 +22,15 @@ const loginComponent = () => {
   const isUpdateEmail = router.query.update === "email";
   const isRemoveAccount = router.query.update === "account";
   const { AccountState } = useContext(AccountContext);
+  const [isOpenResetPassword, setIsOpenResetPassword] =
+    useState<boolean>(false);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     const loginProcess = async ({ r, elements }: LoginProcessProps) => {
-      if (!r.user.emailVerified && AccountState?.providerData[0].providerId === "password") {
+      if (
+        !r.user.emailVerified &&
+        AccountState?.providerData[0].providerId === "password"
+      ) {
         setErrMsg(
           "メール認証ができていません。\n届いているメールをご確認ください。"
         );
@@ -157,12 +165,26 @@ const loginComponent = () => {
             <SSOLogin setErrMsg={setErrMsg} />
           )}
           {!(isRemoveAccount || isUpdateEmail) && (
-            <div className="text-center underline underline-offset-2">
-              <Link href="/signup">アカウントを作成</Link>
-            </div>
+            <>
+              <button
+                type="button"
+                onClick={() => setIsOpenResetPassword(true)}
+                className="text-purple-500 underline"
+              >
+                パスワードを忘れた方はこちら
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+              <div className="text-center underline underline-offset-2">
+                <Link href="/signup">アカウントを作成</Link>
+              </div>
+            </>
           )}
           <p className="text-red-500 whitespace-pre-wrap">{errMsg}</p>
         </form>
+        <ResetPasswordModal
+          setFlag={setIsOpenResetPassword}
+          showFlag={isOpenResetPassword}
+        />
       </div>
     </div>
   );

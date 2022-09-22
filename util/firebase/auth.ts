@@ -25,8 +25,12 @@ const googleProvider = new GoogleAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
 const githubProvider = new GithubAuthProvider();
 
-export const resetPassword = async () => {
+export const resetPassword = async (email?: string) => {
+  if(email) {
+  await sendPasswordResetEmail(auth, email);
+  } else {
   await sendPasswordResetEmail(auth, <string>auth.currentUser?.email);
+  }
 };
 
 export function login(
