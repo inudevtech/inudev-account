@@ -92,7 +92,7 @@ const index = () => {
             };
 
             axios
-              .post(`${process.env.NEXT_PUBLIC_HOTDOG_URL}/api/upload`, body, {
+              .post("/api/upload", body, {
                 params,
               })
               .then((res) => {
