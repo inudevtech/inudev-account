@@ -81,15 +81,18 @@ const index = () => {
             const byteString = Buffer.from(iconURL?.split(",")[1]!, "base64");
 
             const params = {
-              filename: "icon.png",
               token: await AccountState?.getIdToken(true),
               icon: true,
               recaptcha,
-              contentLength: byteString.byteLength,
+            };
+
+            const body = {
+              filenames: ["icon.png"],
+              contentLengths: [byteString.byteLength],
             };
 
             axios
-              .post(`${process.env.NEXT_PUBLIC_HOTDOG_URL}/api/upload`, null, {
+              .post(`${process.env.NEXT_PUBLIC_HOTDOG_URL}/api/upload`, body, {
                 params,
               })
               .then((res) => {
