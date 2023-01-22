@@ -97,7 +97,7 @@ const index = () => {
               })
               .then((res) => {
                 axios
-                  .put(res.data.url, byteString, {
+                  .put(res.data[0].url, byteString, {
                     headers: {
                       "Content-Type": "application/octet-stream",
                       "x-goog-acl": "public-read",
