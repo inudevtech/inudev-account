@@ -30,9 +30,7 @@ const loginComponent: FC<{ setErrMsg: Dispatch<SetStateAction<string>> }> = ({
       <FontAwesomeIcon icon={faGoogle} size="xl" />
       <p>Login with Google</p>
     </div>
-    {
-      // TODO: Twitterを本番環境に対応させる
-      /* <div
+    <div
       className="login-button"
       onClick={async () => {
         login(2)
@@ -47,8 +45,7 @@ const loginComponent: FC<{ setErrMsg: Dispatch<SetStateAction<string>> }> = ({
     >
       <FontAwesomeIcon icon={faTwitter} size="xl" />
       <p>Login with Twitter</p>
-    </div> */
-    }
+    </div>
     <div
       className="login-button"
       onClick={async () => {
