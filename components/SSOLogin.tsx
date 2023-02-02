@@ -1,6 +1,6 @@
 import {
   faGoogle,
-  //   faTwitter,
+  faTwitter,
   faGithub,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
